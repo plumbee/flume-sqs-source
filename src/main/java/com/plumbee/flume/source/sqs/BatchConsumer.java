@@ -18,6 +18,7 @@
  */
 package com.plumbee.flume.source.sqs;
 
+import com.amazonaws.AbortedException;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.BatchResultErrorEntry;
 import com.amazonaws.services.sqs.model.DeleteMessageBatchRequest;
@@ -134,6 +135,10 @@ public class BatchConsumer implements Runnable {
                     consecutiveBackOffs = 0;
                 }
                 continue;
+            } catch (AbortedException e) {
+                sourceCounter.incrementRunnerInterruptCount();
+                Thread.currentThread().interrupt();
+                break;
             } catch (InterruptedException e) {
                 sourceCounter.incrementRunnerInterruptCount();
                 Thread.currentThread().interrupt();

@@ -18,14 +18,18 @@ sudo mkdir -p /usr/lib/flume-ng/plugins.d/flume-sqs-source/lib
 sudo cp target/flume-sqs-source-1.0.0.jar /usr/lib/flume-ng/plugins.d/flume-sqs-source/lib/
 ```
 
-And copy the AWS Java SDK to the plugin specific libext directory:
+And copy the AWS Java SDK dependencies to the plugin specific libext directory:
 ```
 mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
-     -Dartifact=com.amazonaws:aws-java-sdk:1.7.5:jar \
-     -Ddest=aws-java-sdk-1.7.5.jar \
+     -Dartifact=com.amazonaws:aws-java-sdk-core:1.9.6:jar \
+     -Ddest=aws-java-sdk-core-1.9.6.jar \
+     -Dtransitive=false
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
+     -Dartifact=com.amazonaws:aws-java-sdk-sqs:1.9.6:jar \
+     -Ddest=aws-java-sdk-sqs-1.9.6.jar \
      -Dtransitive=false
 sudo mkdir -p /usr/lib/flume-ng/plugins.d/flume-sqs-source/libext
-sudo cp aws-java-sdk-1.7.5.jar /usr/lib/flume-ng/plugins.d/flume-sqs-source/libext/
+sudo cp aws-java-sdk-core-1.9.6.jar aws-java-sdk-sqs-1.9.6.jar /usr/lib/flume-ng/plugins.d/flume-sqs-source/libext/
 ```
 
 ## Configuration

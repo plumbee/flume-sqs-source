@@ -86,8 +86,8 @@ limitations under the License.
 
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.7.5</version>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.9.6</version>
         </dependency>
 
         <dependency>
@@ -109,13 +109,13 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.2.5</version>
+            <version>4.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.2.5</version>
+            <version>4.3</version>
         </dependency>
 
         <!-- Testing -->
