@@ -31,7 +31,7 @@ limitations under the License.
     <inceptionYear>2013</inceptionYear>
 
     <properties>
-        <flume.version>1.5.0</flume.version>
+        <flume.version>1.5.2</flume.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Compiler options -->
