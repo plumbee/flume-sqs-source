@@ -143,7 +143,7 @@ The Flume NG SQS Plugin comes with a custom counter group implementation which c
 
 ## License
 
-Copyright 2014 Plumbee Ltd
+Copyright 2015 Plumbee Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
