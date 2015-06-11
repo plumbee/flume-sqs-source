@@ -17,6 +17,8 @@ package com.plumbee.flume.source.sqs;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -174,30 +176,58 @@ public class SQSSource
                 ConfigurationConstants.CONFIG_FLUSH_INTERVAL);
         }
 
+        if (client != null) {
+            LOGGER.info("AmazonSQSClient already initialized, ignoring " +
+               "AWS credential configuration parameters");
+            return;
+        }
+
         // The following configuration options allows credentials to be
         // provided via the configuration context.
         String awsAccessKeyId = context.getString
             (ConfigurationConstants.CONFIG_AWS_ACCESS_KEY_ID);
         String awsSecretKey = context.getString
             (ConfigurationConstants.CONFIG_AWS_SECRET_KEY);
+        String awsRoleArn = context.getString
+            (ConfigurationConstants.CONFIG_AWS_ROLE_ARN);
+        String awsRoleSessionName = context.getString
+            (ConfigurationConstants.CONFIG_AWS_ROLE_SESSION_NAME);
+        String awsExternalId = context.getString
+            (ConfigurationConstants.CONFIG_AWS_EXTERNAL_ID);
 
-        if (StringUtils.isNotBlank(awsAccessKeyId) &&
-            StringUtils.isNotBlank(awsSecretKey)) {
-            if (client == null) {
-                // Create the AmazonSQSClient using BasicAWSCredentials
-                client = new AmazonSQSClient(
-                    new BasicAWSCredentials(awsAccessKeyId, awsSecretKey),
-                    new ClientConfiguration().withMaxConnections(nbThreads));
+        // Determine the credential provider to use based on configuration
+        // options. STS, Basic then Default.
+        ClientConfiguration clientConfig = new ClientConfiguration()
+            .withMaxConnections(nbThreads);
+        if (StringUtils.isNotBlank(awsRoleArn) &&
+            StringUtils.isNotBlank(awsRoleSessionName)) {
+            STSAssumeRoleSessionCredentialsProvider.Builder stsBuilder =
+                new STSAssumeRoleSessionCredentialsProvider.Builder(
+                    awsRoleArn, awsRoleSessionName);
+            if (StringUtils.isNotBlank(awsAccessKeyId) &&
+                StringUtils.isNotBlank(awsSecretKey)) {
+                stsBuilder.withLongLivedCredentials(
+                    new BasicAWSCredentials(awsAccessKeyId, awsSecretKey));
             } else {
-                LOGGER.warn("Cannot set AWS credentials for AmazonSQSClient, " +
-                    "client already initialized");
+                stsBuilder.withLongLivedCredentialsProvider(
+                    new DefaultAWSCredentialsProviderChain());
             }
-        }
-
-        // Default to the DefaultAWSCredentialsProviderChain.
-        if (client == null) {
+            if (StringUtils.isNotBlank(awsExternalId)) {
+                stsBuilder.withExternalId(awsExternalId);
+            }
+            LOGGER.info("Using STSAssumeRoleSessionCredentialsProvider to " +
+                "request AWS credentials");
+            client = new AmazonSQSClient(stsBuilder.build(), clientConfig);
+        } else if (StringUtils.isNotBlank(awsAccessKeyId) &&
+                   StringUtils.isNotBlank(awsSecretKey)) {
+            LOGGER.info("Using BasicAWSCredentials to provide AWS credentials");
+            client = new AmazonSQSClient(new BasicAWSCredentials(
+                awsAccessKeyId, awsSecretKey), clientConfig);
+        } else {
+            LOGGER.info("Using DefaultAWSCredentialsProviderChain to request " +
+                "AWS credentials");
             client = new AmazonSQSClient(
-                new ClientConfiguration().withMaxConnections(nbThreads));
+                new DefaultAWSCredentialsProviderChain(), clientConfig);
         }
     }
 

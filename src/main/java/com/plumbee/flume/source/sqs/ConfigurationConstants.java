@@ -66,6 +66,15 @@ public final class ConfigurationConstants {
     public static final String CONFIG_AWS_SECRET_KEY = "awsSecretKey";
 
     /**
+     * Role ARN, Role Session Name and External Id for AWS Security Token
+     * Service to assume a Role and create temporary, short-lived sessions to
+     * use for authentication.
+     */
+    public static final String CONFIG_AWS_ROLE_ARN = "awsRoleArn";
+    public static final String CONFIG_AWS_ROLE_SESSION_NAME = "awsRoleSessionName";
+    public static final String CONFIG_AWS_EXTERNAL_ID = "awsExternalId";
+
+    /**
      * The number of messages to extract from the queue before committing to
      * the downstream channel.
      */

@@ -28,8 +28,12 @@ mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
      -Dartifact=com.amazonaws:aws-java-sdk-sqs:1.9.6:jar \
      -Ddest=aws-java-sdk-sqs-1.9.6.jar \
      -Dtransitive=false
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:get \
+     -Dartifact=com.amazonaws:aws-java-sdk-sts:1.9.6:jar \
+     -Ddest=aws-java-sdk-sts-1.9.6.jar \
+     -Dtransitive=false
 sudo mkdir -p /usr/lib/flume-ng/plugins.d/flume-sqs-source/libext
-sudo cp aws-java-sdk-core-1.9.6.jar aws-java-sdk-sqs-1.9.6.jar /usr/lib/flume-ng/plugins.d/flume-sqs-source/libext/
+sudo cp aws-java-sdk-core-1.9.6.jar aws-java-sdk-sqs-1.9.6.jar aws-java-sdk-sts-1.9.6.jar /usr/lib/flume-ng/plugins.d/flume-sqs-source/libext/
 ```
 
 ## Configuration
@@ -47,6 +51,9 @@ The following configuration properties are supported by the plugin. Required pro
  recvVisabilityTimeout | 3600    | The number of seconds to wait before a message previously taken from the queue (without deletion) becomes visible again to other consumers.
  awsAccessKeyId        |         | The AWS Access keyId to be used to authentication with SQS.
  awsSecretKey          |         | The Secret Key associated to AWS Access keyId.
+ awsRoleArn            |         | The Amazon Resource Name (ARN) of the role to be assumed from the AWS Security Token Service.
+ awsRoleSessionName    |         | An identifier for the assumed role session.
+ awsExternalId         |         | A unique identifier that is used by third parties to assume a role in their customers’ accounts. [Refer to How to Use External ID When Granting Access to Your AWS Resources](http://docs.aws.amazon.com/STS/latest/UsingSTS/sts-delegating-externalid.html)
  batchSize             | 100     | The number of messages to collect from the queue before committing them to the channels.
  flushInterval         | 1800    | The maximum time in seconds between commits to the channels if the number of buffered messages has not reached the batchSize. Setting this value higher than the recvVisabilityTimeout can result in message duplication.
  nbThreads             | 5       | The number of threads to be used when retrieving messages from SQS.
